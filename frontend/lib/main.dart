@@ -1,11 +1,51 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 
-// --- TWOJE IMPORTY ---
+// Twoje importy
 import 'pages/profile_page.dart';
 import 'modules/challenges/screens/challenge_list_screen.dart';
+import 'services/progress_service.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
+  if (kIsWeb) {
+    ErrorWidget.builder = (FlutterErrorDetails details) {
+      final exception = details.exception;
+      if (exception.toString().contains('FirebaseException') ||
+          exception.toString().contains('JavaScriptObject')) {
+        return Material(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error_outline, size: 64, color: Colors.red),
+                SizedBox(height: 16),
+                Text(
+                  'Błąd inicjalizacji Firebase',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Sprawdź konfigurację Firebase w web/index.html',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+      return ErrorWidget(details.exception);
+    };
+  }
+
+  runApp(MyApp());
+}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 🔥 AUTOMATYCZNE ŁADOWANIE WYZWANIA PRZY STARCIU
+  ProgressService.instance.initializeChallenges();
+
   runApp(const MyApp());
 }
 
@@ -20,7 +60,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.red,
-          primary: Colors.red,
         ),
         scaffoldBackgroundColor: Colors.grey[100],
         appBarTheme: const AppBarTheme(
@@ -49,15 +88,10 @@ class _HomeScreenState extends State<HomeScreen> {
       const PlaceholderWidget(title: 'Strona główna'),
       const PlaceholderWidget(title: 'Społeczność'),
 
-      /// 🔥 Poprawiona wersja – przekazujemy wymagane parametry
-      ChallengeListScreen(
-        primary: Colors.red,
-        muted: Colors.grey,
-      ),
+      /// ChallengeListScreen NIE przyjmuje parametrów
+      const ChallengeListScreen(),
 
       const PlaceholderWidget(title: 'Sklep'),
-
-      /// Profil
       const ProfilePage(),
     ];
 

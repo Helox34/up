@@ -1,38 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+    <base href="$FLUTTER_BASE_HREF">
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+    <meta charset="UTF-8">
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+    <meta name="description" content="A new Flutter project.">
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+    <!-- iOS meta tags & icons -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="wkmobile">
+    <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+    <title>wkmobile</title>
+    <link rel="manifest" href="manifest.json">
 
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="wkmobile">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    <!-- FIREBASE CONFIGURATION -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script>
+        // Konfiguracja Firebase - ZASTĄP TYMI DANAMI Z TWOJEGO PROJEKTU
+        const firebaseConfig = {
+  apiKey: "AIzaSyCxKccA6knzjd63tiXhrhqRmMPvAfKvR0Y",
+  authDomain: "levelup-d5d59.firebaseapp.com",
+  projectId: "levelup-d5d59",
+  storageBucket: "levelup-d5d59.firebasestorage.app",
+  messagingSenderId: "465022479910",
+  appId: "1:465022479910:web:2fe63f554ee9cd7c2440e7",
+  measurementId: "G-L3P0VVDHE0"
+};
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>wkmobile</title>
-  <link rel="manifest" href="manifest.json">
+        // Inicjalizacja Firebase z obsługą błędów
+        try {
+          if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
+            firebase.initializeApp(firebaseConfig);
+            console.log('Firebase initialized successfully');
+          }
+        } catch (error) {
+          console.error('Firebase initialization failed:', error);
+        }
+    </script>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+<script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

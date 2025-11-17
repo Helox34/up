@@ -39,6 +39,6 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/challenges.json
     - assets/icons/
     - assets/images/
-   # - assets/fonts/

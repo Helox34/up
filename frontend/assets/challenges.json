@@ -1,0 +1,405 @@
+[
+  {
+    "id": "bench_bw",
+    "name": "Bench Press (×BW)",
+    "unit": "x BW",
+    "icon": "🏋️‍♂️",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "targetMultiplier": 0.75, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "targetMultiplier": 1.0, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "targetMultiplier": 1.25, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "targetMultiplier": 1.5, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "bench_kg",
+    "name": "Bench Press (kg)",
+    "unit": "kg",
+    "icon": "🏋️‍♂️",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 60, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 80, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 100, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 120, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "squat_bw",
+    "name": "Back Squat (×BW)",
+    "unit": "x BW",
+    "icon": "🏋️‍♀️",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "targetMultiplier": 1.0, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "targetMultiplier": 1.25, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "targetMultiplier": 1.5, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "targetMultiplier": 2.0, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "squat_kg",
+    "name": "Back Squat (kg)",
+    "unit": "kg",
+    "icon": "🏋️‍♀️",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 80, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 100, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 120, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 140, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "deadlift_bw",
+    "name": "Deadlift (×BW)",
+    "unit": "x BW",
+    "icon": "🏋️",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "targetMultiplier": 1.25, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "targetMultiplier": 1.5, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "targetMultiplier": 2.0, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "targetMultiplier": 2.5, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "deadlift_kg",
+    "name": "Deadlift (kg)",
+    "unit": "kg",
+    "icon": "💪",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 100, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 120, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 140, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 160, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "ohp_bw",
+    "name": "Overhead Press (×BW)",
+    "unit": "x BW",
+    "icon": "🤸‍♂️",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "targetMultiplier": 0.5, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "targetMultiplier": 0.65, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "targetMultiplier": 0.8, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "targetMultiplier": 1.0, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "bench_press_100kg_series",
+    "name": "Bench 100kg - Series",
+    "unit": "reps",
+    "icon": "🏋️‍♂️",
+    "category": "specialization",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 5, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 8, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 10, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 12, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "run_5k",
+    "name": "Run 5 km",
+    "unit": "km",
+    "icon": "🏃‍♂️",
+    "category": "endurance",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 5, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 5, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 5, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 5, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "run_10k",
+    "name": "Run 10 km",
+    "unit": "km",
+    "icon": "🏃‍♀️",
+    "category": "endurance",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 10, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 10, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 10, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 10, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "plank_minutes",
+    "name": "Plank Hold",
+    "unit": "minutes",
+    "icon": "🧘",
+    "category": "endurance",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 2, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 3, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 5, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 8, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "burpees_total",
+    "name": "Burpees Total",
+    "unit": "reps",
+    "icon": "💥",
+    "category": "endurance",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 200, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 500, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 1000, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 2500, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "pullups_total",
+    "name": "Pull-ups Total",
+    "unit": "reps",
+    "icon": "🙆‍♂️",
+    "category": "calisthenics",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 50, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 150, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 500, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 1000, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "pushups_total",
+    "name": "Push-ups Total",
+    "unit": "reps",
+    "icon": "💪",
+    "category": "calisthenics",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 500, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 1000, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 5000, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 10000, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "muscle_up_master",
+    "name": "Muscle-Up Master",
+    "unit": "reps",
+    "icon": "🤼‍♂️",
+    "category": "calisthenics",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 10, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 30, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 75, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 150, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "monthly_trainings",
+    "name": "Monthly Training Sessions",
+    "unit": "sessions",
+    "icon": "📅",
+    "category": "gym_progress",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 6, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 10, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 15, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 20, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "workouts_100",
+    "name": "100 Completed Workouts",
+    "unit": "workouts",
+    "icon": "🏁",
+    "category": "gym_progress",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 10, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 25, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 50, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 100, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "bodyweight_stability",
+    "name": "Maintain Bodyweight",
+    "unit": "kg",
+    "icon": "⚖️",
+    "category": "bodyweight_physique",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 1, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 2, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 3, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 5, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "weight_loss_kg",
+    "name": "Weight Loss (kg)",
+    "unit": "kg",
+    "icon": "🔥",
+    "category": "bodyweight_physique",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 3, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 5, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 8, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 12, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "steps_10k_daily",
+    "name": "Daily 10k Steps",
+    "unit": "days",
+    "icon": "👟",
+    "category": "lifestyle",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 7, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 14, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 30, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 90, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "sleep_7h",
+    "name": "7h Sleep Habit",
+    "unit": "days",
+    "icon": "🌙",
+    "category": "lifestyle",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 7, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 14, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 30, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 90, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "water_2l_daily",
+    "name": "2L Water Daily",
+    "unit": "days",
+    "icon": "💧",
+    "category": "lifestyle",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 7, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 21, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 60, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 120, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "wk_100_pushups",
+    "name": "WK #100 Pushups",
+    "unit": "reps",
+    "icon": "💥",
+    "category": "wk_challenges",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 100, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 500, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 1000, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 5000, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "wk_30day_challenge",
+    "name": "WK 30-Day Consistency",
+    "unit": "days",
+    "icon": "🔥",
+    "category": "wk_challenges",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 7, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 14, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 21, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 30, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "row_kg",
+    "name": "Barbell Row (kg)",
+    "unit": "kg",
+    "icon": "🏋️",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 60, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 70, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 80, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 90, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "trapbar_kg",
+    "name": "Trapbar Deadlift (kg)",
+    "unit": "kg",
+    "icon": "🚜",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 100, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 120, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 140, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 160, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "hangclean_kg",
+    "name": "Hang Clean (kg)",
+    "unit": "kg",
+    "icon": "🏋️",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 40, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 50, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 60, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 70, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "hipthrust_kg",
+    "name": "Hip Thrust (kg)",
+    "unit": "kg",
+    "icon": "🍑",
+    "category": "strength",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 80, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 100, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 120, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 140, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "row_erg_5k",
+    "name": "Rowing 5k (erg)",
+    "unit": "time_min",
+    "icon": "🚣",
+    "category": "endurance",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 22, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 20, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 18, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 16, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "sprint_400m",
+    "name": "400 m Sprint",
+    "unit": "seconds",
+    "icon": "⚡",
+    "category": "endurance",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 80, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 70, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 60, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 50, "medalType": "diamond" }
+    ]
+  },
+  {
+    "id": "mobility_flow",
+    "name": "Daily Mobility Flow",
+    "unit": "days",
+    "icon": "🤸",
+    "category": "variety",
+    "levels": [
+      { "id": "bronze", "name": "Bronze", "target": 7, "medalType": "bronze" },
+      { "id": "silver", "name": "Silver", "target": 14, "medalType": "silver" },
+      { "id": "gold", "name": "Gold", "target": 30, "medalType": "gold" },
+      { "id": "diamond", "name": "Diamond", "target": 90, "medalType": "diamond" }
+    ]
+  }
+]
