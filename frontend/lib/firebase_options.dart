@@ -1,6 +1,6 @@
 // lib/firebase_options.dart
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, defaultTargetPlatform, TargetPlatform;
 
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
@@ -36,28 +36,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'your-web-api-key',
-    appId: 'your-web-app-id',
-    messagingSenderId: 'your-web-sender-id',
-    projectId: 'your-project-id',
-    authDomain: 'your-project.firebaseapp.com',
-    storageBucket: 'your-project.appspot.com',
+    apiKey: 'AIzaSyCxKccA6knzjd63tiXhrhqRmMPvAfKvR0Y',
+    appId: '1:465022479910:web:2fe63f554ee9cd7c2440e7',
+    messagingSenderId: '465022479910',
+    projectId: 'levelup-d5d59',
+    authDomain: 'levelup-d5d59.firebaseapp.com',
+    storageBucket: 'levelup-d5d59.firebasestorage.app',
+    measurementId: 'G-L3P0VVDHE0',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'your-android-api-key',
-    appId: 'your-android-app-id',
-    messagingSenderId: 'your-android-sender-id',
-    projectId: 'your-project-id',
-    storageBucket: 'your-project.appspot.com',
+    apiKey: 'AIzaSyCxKccA6knzjd63tiXhrhqRmMPvAfKvR0Y', // Taki sam jak web lub pobierz z Firebase Console
+    appId: '1:465022479910:android:2fe63f554ee9cd7c2440e7', // Zmień na Android app ID
+    messagingSenderId: '465022479910',
+    projectId: 'levelup-d5d59',
+    storageBucket: 'levelup-d5d59.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'your-ios-api-key',
-    appId: 'your-ios-app-id',
-    messagingSenderId: 'your-ios-sender-id',
-    projectId: 'your-project-id',
-    storageBucket: 'your-project.appspot.com',
-    iosBundleId: 'com.yourcompany.wkmobile',
+    apiKey: 'AIzaSyCxKccA6knzjd63tiXhrhqRmMPvAfKvR0Y', // Taki sam jak web lub pobierz z Firebase Console
+    appId: '1:465022479910:ios:2fe63f554ee9cd7c2440e7', // Zmień na iOS app ID
+    messagingSenderId: '465022479910',
+    projectId: 'levelup-d5d59',
+    storageBucket: 'levelup-d5d59.firebasestorage.app',
+    iosBundleId: 'com.example.wkmobile', // Zmień na swój Bundle ID
   );
 }

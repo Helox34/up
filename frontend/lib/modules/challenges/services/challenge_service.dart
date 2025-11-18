@@ -1,5 +1,7 @@
 // lib/modules/challenges/services/challenge_service.dart
-// Tymczasowa wersja bez Firebase
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import '../models/challenge.dart';
 
 class ChallengeService {
   ChallengeService._();
@@ -9,17 +11,16 @@ class ChallengeService {
   bool _loaded = false;
 
   List<Challenge> get challenges => List.unmodifiable(_challenges);
-  String? get currentUserId => "demo-user"; // Tymczasowy użytkownik
-  bool get isUserAuthenticated => true; // Zawsze zalogowany dla demo
+  String? get currentUserId => "demo-user";
+  bool get isUserAuthenticated => true;
 
   /// Load demo challenges
   Future<void> loadFromAssets({String path = 'assets/challenges.json', bool pushToFirestore = false}) async {
     if (_loaded) return;
 
-    // Tymczasowe dane demo zamiast ładowania z Firebase
     _challenges.clear();
 
-    // Przykładowe wyzwania
+    // Przykładowe wyzwania - używając istniejących wartości enum
     _challenges.addAll([
       Challenge(
         id: 'pushups_bronze',
@@ -29,8 +30,8 @@ class ChallengeService {
         days: 30,
         progress: 0.0,
         difficulty: 'Łatwy',
-        type: 'exercise',
-        category: 'bodyweight',
+        type: ChallengeType.exercise,
+        category: ChallengeCategory.bodyweight,
         target: {'reps': 100},
         current: {'reps': 0},
         unit: 'pompek',
@@ -47,8 +48,8 @@ class ChallengeService {
         days: 30,
         progress: 0.0,
         difficulty: 'Łatwy',
-        type: 'strength',
-        category: 'proficiency',
+        type: ChallengeType.proficiency,
+        category: ChallengeCategory.strength,
         target: {'weight': 80},
         current: {'weight': 0},
         unit: 'kg',
@@ -63,7 +64,6 @@ class ChallengeService {
   }
 
   Future<void> loadFromFirestore() async {
-    // Tymczasowo używaj danych lokalnych
     await loadFromAssets();
   }
 
@@ -75,28 +75,22 @@ class ChallengeService {
     }
   }
 
-  /// Write user progress (e.g., after join/update)
   Future<void> setUserProgress(String challengeId, Map<String, dynamic> data) async {
-    // Tymczasowo tylko zapis w pamięci
     print('Progress saved for $challengeId: $data');
-    await Future.delayed(Duration(milliseconds: 100)); // Symulacja opóźnienia
+    await Future.delayed(Duration(milliseconds: 100));
   }
 
-  /// Join challenge
   Future<void> joinChallenge(String challengeId) async {
     final ch = byId(challengeId);
     if (ch == null) throw Exception('Challenge not found: $challengeId');
 
-    // Tymczasowo tylko aktualizacja lokalna
     ch.isJoined = true;
     print('Joined challenge: $challengeId');
-    await Future.delayed(Duration(milliseconds: 100)); // Symulacja opóźnienia
+    await Future.delayed(Duration(milliseconds: 100));
   }
 
-  /// Update user profile data
   Future<void> updateUserProfile(Map<String, dynamic> updateData) async {
-    // Tymczasowo tylko log
     print('Profile updated: $updateData');
-    await Future.delayed(Duration(milliseconds: 100)); // Symulacja opóźnienia
+    await Future.delayed(Duration(milliseconds: 100));
   }
-}r
+}

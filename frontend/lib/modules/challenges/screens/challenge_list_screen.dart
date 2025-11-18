@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../models/challenge.dart';
 import '../services/challenge_service.dart';
 import '../services/user_progress_service.dart';
-import '../widgets/challenge_card.dart';
-import 'challenge_detail_screen.dart';
 
 class ChallengeListScreen extends StatefulWidget {
   const ChallengeListScreen({Key? key}) : super(key: key);
@@ -45,11 +43,14 @@ class _ChallengeListScreenState extends State<ChallengeListScreen> {
   }
 
   void _openDetail(Challenge ch) async {
-    // Tymczasowe rozwiązanie - prostsza wersja bez ChallengeDetailScreen
     final res = await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => Scaffold(
-          appBar: AppBar(title: Text(ch.title)),
+          appBar: AppBar(
+            title: Text(ch.title),
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+          ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -60,13 +61,17 @@ class _ChallengeListScreenState extends State<ChallengeListScreen> {
                   style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 20),
-                Text('Typ: ${ch.type}'),
-                Text('Kategoria: ${ch.category}'),
+                Text('Typ: ${_enumToString(ch.type)}'),
+                Text('Kategoria: ${_enumToString(ch.category)}'),
                 Text('Trudność: ${ch.difficulty}'),
                 Text('Czas: ${ch.days} dni'),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
                   child: const Text('Zamknij'),
                 ),
               ],
@@ -88,7 +93,10 @@ class _ChallengeListScreenState extends State<ChallengeListScreen> {
     try {
       await _service.joinChallenge(ch.id);
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Dołączyłeś do ${ch.title}'))
+          SnackBar(
+            content: Text('Dołączyłeś do ${ch.title}'),
+            backgroundColor: Colors.green,
+          )
       );
       setState(() {
         // Aktualizacja stanu wyzwania
@@ -96,7 +104,10 @@ class _ChallengeListScreenState extends State<ChallengeListScreen> {
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Błąd: $e'))
+          SnackBar(
+            content: Text('Błąd: $e'),
+            backgroundColor: Colors.red,
+          )
       );
     }
   }
@@ -109,40 +120,128 @@ class _ChallengeListScreenState extends State<ChallengeListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-    final muted = Colors.grey;
-
     if (_loading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
+      return const Center(
+        child: CircularProgressIndicator(
+          color: Colors.red,
         ),
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Wyzwania'),
+    return _challenges.isEmpty
+        ? const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.emoji_events, size: 64, color: Colors.grey),
+          SizedBox(height: 16),
+          Text(
+            'Brak dostępnych wyzwań',
+            style: TextStyle(fontSize: 18, color: Colors.grey),
+          ),
+        ],
       ),
-      body: _challenges.isEmpty
-          ? const Center(
-        child: Text('Brak dostępnych wyzwań'),
-      )
-          : ListView.builder(
-        padding: const EdgeInsets.all(12),
-        itemCount: _challenges.length,
-        itemBuilder: (ctx, idx) {
-          final ch = _challenges[idx];
-          return ChallengeCard(
-            challenge: ch,
-            userProfile: _userProfile,
-            primary: primary,
-            muted: muted,
+    )
+        : ListView.builder(
+      padding: const EdgeInsets.all(12),
+      itemCount: _challenges.length,
+      itemBuilder: (ctx, idx) {
+        final ch = _challenges[idx];
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          elevation: 2,
+          child: ListTile(
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Center(
+                child: Text(
+                  ch.icon,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+            title: Text(
+              ch.title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(ch.subtitle),
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.schedule, size: 14, color: Colors.grey[600]),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${ch.days} dni',
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
+                    const SizedBox(width: 12),
+                    Icon(Icons.star, size: 14, color: Colors.grey[600]),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${ch.difficulty}',
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            trailing: ch.isJoined
+                ? Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.green.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.shade200),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check, size: 16, color: Colors.green.shade700),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Dołączono',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.green.shade700,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            )
+                : ElevatedButton(
+              onPressed: () => _join(ch),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
+              child: const Text(
+                'Dołącz',
+                style: TextStyle(fontSize: 12),
+              ),
+            ),
             onTap: () => _openDetail(ch),
-            onPrimaryAction: () => ch.isJoined ? _openDetail(ch) : _join(ch),
-          );
-        },
-      ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          ),
+        );
+      },
     );
+  }
+
+  // Pomocnicza funkcja do konwersji enum na string
+  String _enumToString(dynamic enumValue) {
+    return enumValue.toString().split('.').last;
   }
 }

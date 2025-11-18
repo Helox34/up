@@ -1,50 +1,31 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 // Twoje importy
 import 'pages/profile_page.dart';
-import 'modules/challenges/screens/challenge_list_screen.dart';
+import 'pages/shop_page.dart';
+import 'modules/challenges/screens/challenge_list_with_achievements_screen.dart'; // 👈 IMPORTUJEMY NOWY SCREEN
 import 'services/progress_service.dart';
-import 'package:flutter/foundation.dart';
 
-void main() {
-  if (kIsWeb) {
-    ErrorWidget.builder = (FlutterErrorDetails details) {
-      final exception = details.exception;
-      if (exception.toString().contains('FirebaseException') ||
-          exception.toString().contains('JavaScriptObject')) {
-        return Material(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.error_outline, size: 64, color: Colors.red),
-                SizedBox(height: 16),
-                Text(
-                  'Błąd inicjalizacji Firebase',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Sprawdź konfigurację Firebase w web/index.html',
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-      return ErrorWidget(details.exception);
-    };
-  }
-
-  runApp(MyApp());
-}
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔥 AUTOMATYCZNE ŁADOWANIE WYZWANIA PRZY STARCIU
-  ProgressService.instance.initializeChallenges();
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('✅ Firebase initialized successfully');
+  } catch (error) {
+    print('❌ Firebase initialization error: $error');
+  }
+
+  try {
+    ProgressService.instance.initializeChallenges();
+  } catch (error) {
+    print('❌ ProgressService error: $error');
+  }
 
   runApp(const MyApp());
 }
@@ -66,6 +47,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.red,
           foregroundColor: Colors.white,
         ),
+        useMaterial3: true,
       ),
       home: const HomeScreen(),
     );
@@ -80,21 +62,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 2;
+  int _currentIndex = 2; // 👈 DOMYŚLNIE WYZWANIA NA ŚRODKU
+
+  final List<Widget> screens = [
+    const PlaceholderWidget(title: 'Strona główna'),
+    const PlaceholderWidget(title: 'Społeczność'),
+    const ChallengeListWithAchievementsScreen(), // 👈 TEN SCREEN MA 2 ZAKŁADKI WEWNĘTRZNE
+    const ShopPage(),
+    const ProfilePage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> screens = [
-      const PlaceholderWidget(title: 'Strona główna'),
-      const PlaceholderWidget(title: 'Społeczność'),
-
-      /// ChallengeListScreen NIE przyjmuje parametrów
-      const ChallengeListScreen(),
-
-      const PlaceholderWidget(title: 'Sklep'),
-      const ProfilePage(),
-    ];
-
     return Scaffold(
       body: screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -102,8 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: (index) => setState(() => _currentIndex = index),
         selectedItemColor: Colors.red,
         unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Strona główna'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Główna'),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Społeczność'),
           BottomNavigationBarItem(icon: Icon(Icons.emoji_events), label: 'Wyzwania'),
           BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Sklep'),
@@ -114,8 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ------------------------------------------------------------
-// Placeholder dla pustych ekranów
 class PlaceholderWidget extends StatelessWidget {
   final String title;
   const PlaceholderWidget({super.key, required this.title});

@@ -1,53 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <base href="$FLUTTER_BASE_HREF">
-
     <meta charset="UTF-8">
-    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-    <meta name="description" content="A new Flutter project.">
-
-    <!-- iOS meta tags & icons -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="wkmobile">
-    <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="favicon.png"/>
-
-    <title>wkmobile</title>
-    <link rel="manifest" href="manifest.json">
-
-    <!-- FIREBASE CONFIGURATION -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script>
-        // Konfiguracja Firebase - ZASTĄP TYMI DANAMI Z TWOJEGO PROJEKTU
-        const firebaseConfig = {
-  apiKey: "AIzaSyCxKccA6knzjd63tiXhrhqRmMPvAfKvR0Y",
-  authDomain: "levelup-d5d59.firebaseapp.com",
-  projectId: "levelup-d5d59",
-  storageBucket: "levelup-d5d59.firebasestorage.app",
-  messagingSenderId: "465022479910",
-  appId: "1:465022479910:web:2fe63f554ee9cd7c2440e7",
-  measurementId: "G-L3P0VVDHE0"
-};
-
-
-        // Inicjalizacja Firebase z obsługą błędów
-        try {
-          if (typeof firebase !== 'undefined' && firebase.apps.length === 0) {
-            firebase.initializeApp(firebaseConfig);
-            console.log('Firebase initialized successfully');
-          }
-        } catch (error) {
-          console.error('Firebase initialization failed:', error);
-        }
-    </script>
+    <title>WK Mobile</title>
+    <style>body { margin: 0; background: black; }</style>
 </head>
 <body>
-<script src="flutter_bootstrap.js" async></script>
+<script src="main.dart.js"></script>
 </body>
 </html>

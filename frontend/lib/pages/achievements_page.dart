@@ -1,6 +1,7 @@
 // lib/pages/achievements_page.dart
 import 'package:flutter/material.dart';
-import '../services/achievement_service.dart';
+import '../services/badge_service.dart';
+import '../widgets/badge_card.dart';
 
 class AchievementsPage extends StatefulWidget {
   const AchievementsPage({super.key});
@@ -10,194 +11,101 @@ class AchievementsPage extends StatefulWidget {
 }
 
 class _AchievementsPageState extends State<AchievementsPage> {
-  final AchievementService _achievementService = AchievementService();
-  String _selectedFilter = 'all';
+  Widget _buildCategoryList(String category) {
+    final badges = BadgeService.getBadgesByCategory(category);
 
-  @override
-  void initState() {
-    super.initState();
-    _achievementService.initializeAchievements();
-  }
+    if (badges.isEmpty) {
+      return const Center(
+        child: Text(
+          'Brak odznak w tej kategorii',
+          style: TextStyle(color: Colors.grey),
+        ),
+      );
+    }
 
-  Widget _buildAchievementGrid() {
-    final achievements = _achievementService.achievements;
-
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.8,
-      ),
-      padding: const EdgeInsets.all(16),
-      itemCount: achievements.length,
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      itemCount: badges.length,
       itemBuilder: (context, index) {
-        final achievement = achievements[index];
-        return _buildAchievementCard(achievement);
+        return BadgeCard(badge: badges[index]);
       },
     );
   }
 
-  Widget _buildAchievementCard(Achievement achievement) {
-    return Card(
-      elevation: 4,
-      color: achievement.isUnlocked ? null : Colors.grey[200],
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              achievement.icon,
-              style: const TextStyle(fontSize: 40),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              achievement.title,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: achievement.isUnlocked ? Colors.black : Colors.grey,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              achievement.description,
-              style: TextStyle(
-                fontSize: 12,
-                color: achievement.isUnlocked ? Colors.grey[600] : Colors.grey[400],
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            _buildTierBadge(achievement.tier, achievement.points),
-            if (achievement.isUnlocked && achievement.unlockedAt != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                'Odblokowano: ${_formatDate(achievement.unlockedAt!)}',
-                style: const TextStyle(fontSize: 10, color: Colors.green),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTierBadge(AchievementTier tier, int points) {
-    final color = _getTierColor(tier);
-    final tierName = _getTierName(tier);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            tierName,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            '$points pkt',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 10,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getTierColor(AchievementTier tier) {
-    switch (tier) {
-      case AchievementTier.bronze:
-        return const Color(0xFFCD7F32);
-      case AchievementTier.silver:
-        return const Color(0xFFC0C0C0);
-      case AchievementTier.gold:
-        return const Color(0xFFFFD700);
-      case AchievementTier.platinum:
-        return const Color(0xFFE5E4E2);
-      case AchievementTier.diamond:
-        return const Color(0xFFB9F2FF);
-    }
-  }
-
-  String _getTierName(AchievementTier tier) {
-    switch (tier) {
-      case AchievementTier.bronze:
-        return 'BRĄZ';
-      case AchievementTier.silver:
-        return 'SREBRO';
-      case AchievementTier.gold:
-        return 'ZŁOTO';
-      case AchievementTier.platinum:
-        return 'PLATYNA';
-      case AchievementTier.diamond:
-        return 'DIAMENT';
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day}.${date.month}.${date.year}';
-  }
-
+  // Statystyki header
   Widget _buildStatsHeader() {
+    final allBadges = BadgeService.allBadges;
+    final completedBadges = allBadges.where((badge) => badge.isCompleted).length;
+    final totalPoints = allBadges.fold(0, (sum, badge) => sum + (badge.isCompleted ? 100 : 0));
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.blue, Colors.blue[800]!],
+          colors: [Colors.red.shade600, Colors.red.shade800],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Column(
         children: [
-          _buildStatItem(
-            _achievementService.unlockedCount.toString(),
-            'Odblokowane',
+          const Text(
+            'Twoje Odznaki',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          _buildStatItem(
-            _achievementService.achievements.length.toString(),
-            'Wszystkie',
-          ),
-          _buildStatItem(
-            _achievementService.totalPoints.toString(),
-            'Punkty',
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildStatItem(
+                completedBadges.toString(),
+                'Zdobyte',
+                Icons.check_circle,
+              ),
+              _buildStatItem(
+                allBadges.length.toString(),
+                'Wszystkie',
+                Icons.workspace_premium,
+              ),
+              _buildStatItem(
+                totalPoints.toString(),
+                'Punkty',
+                Icons.star,
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatItem(String value, String label) {
+  Widget _buildStatItem(String value, String label, IconData icon) {
     return Column(
       children: [
+        Icon(icon, color: Colors.white, size: 28),
+        const SizedBox(height: 4),
         Text(
           value,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
+        const SizedBox(height: 2),
         Text(
           label,
           style: const TextStyle(
             color: Colors.white70,
-            fontSize: 14,
+            fontSize: 12,
           ),
         ),
       ],
@@ -207,12 +115,12 @@ class _AchievementsPageState extends State<AchievementsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       body: Column(
         children: [
           _buildStatsHeader(),
-          const SizedBox(height: 16),
           Expanded(
-            child: _buildAchievementGrid(),
+            child: _buildCategoryList('badges'), // 👈 POKAZUJEMY TYLKO ODZNAKI
           ),
         ],
       ),

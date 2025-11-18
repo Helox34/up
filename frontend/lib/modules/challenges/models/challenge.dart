@@ -141,8 +141,8 @@ class Challenge {
     'days': days,
     'progress': progress,
     'difficulty': difficulty,
-    'type': describeEnum(type),
-    'category': describeEnum(category),
+    'type': _enumToString(type),
+    'category': _enumToString(category),
     'target': target,
     'current': current,
     'unit': unit,
@@ -162,15 +162,17 @@ class Challenge {
     ChallengeType parseType(String? s) {
       if (s == null) return ChallengeType.proficiency;
       return ChallengeType.values.firstWhere(
-              (e) => describeEnum(e).toLowerCase() == s.toLowerCase(),
-          orElse: () => ChallengeType.proficiency);
+            (e) => _enumToString(e).toLowerCase() == s.toLowerCase(),
+        orElse: () => ChallengeType.proficiency,
+      );
     }
 
     ChallengeCategory parseCategory(String? s) {
       if (s == null) return ChallengeCategory.strength;
       return ChallengeCategory.values.firstWhere(
-              (e) => describeEnum(e).toLowerCase() == s.toLowerCase(),
-          orElse: () => ChallengeCategory.strength);
+            (e) => _enumToString(e).toLowerCase() == s.toLowerCase(),
+        orElse: () => ChallengeCategory.strength,
+      );
     }
 
     final levelsRaw = (json['levels'] as List<dynamic>?);
@@ -196,12 +198,17 @@ class Challenge {
       icon: json['icon'] as String? ?? '🏆',
       isJoined: json['isJoined'] as bool? ?? false,
       isCompleted: json['isCompleted'] as bool? ?? false,
-      joinedAt: json['joinedAt'] != null ? DateTime.parse(json['joinedAt']) : null,
-      completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt']) : null,
+      joinedAt: json['joinedAt'] != null ? DateTime.parse(json['joinedAt'] as String) : null,
+      completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt'] as String) : null,
       parentChallengeId: json['parentChallengeId'] as String?,
       medalType: json['medalType'] as String? ?? 'none',
       isUnlocked: json['isUnlocked'] as bool? ?? true,
       levels: levels,
     );
   }
+}
+
+// Pomocnicza funkcja do konwersji enum na string
+String _enumToString(dynamic enumValue) {
+  return enumValue.toString().split('.').last;
 }
