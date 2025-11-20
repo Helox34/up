@@ -1,3 +1,4 @@
+// auth_service.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -8,7 +9,10 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _fs = FirebaseFirestore.instance;
 
-  // 👇 TE METODY MUSZĄ MIEĆ DOKŁADNIE TAKIE NAZWY JAK W AuthProvider i auth_page.dart
+  // 👇 DODAJMY PRINT DO KONSTRUKTORA
+  AuthService() {
+    print('AuthService initialized - methods available: signInWithGoogle, signInWithFacebook, signInWithApple');
+  }
 
   Future<UserCredential> signInWithEmail(String email, String password) async {
     final cred = await _auth.signInWithEmailAndPassword(email: email, password: password);
@@ -31,7 +35,9 @@ class AuthService {
     await _auth.signOut();
   }
 
+  // 👇 TE METODY DEFINITYWNIE ISTNIEJĄ
   Future<UserCredential?> signInWithGoogle() async {
+    print('signInWithGoogle called');
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) return null;
     final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -45,6 +51,7 @@ class AuthService {
   }
 
   Future<UserCredential?> signInWithFacebook() async {
+    print('signInWithFacebook called');
     final LoginResult res = await FacebookAuth.instance.login(permissions: ['email', 'public_profile']);
     if (res.status == LoginStatus.success) {
       final OAuthCredential facebookCredential = FacebookAuthProvider.credential(res.accessToken!.tokenString);
@@ -57,6 +64,7 @@ class AuthService {
   }
 
   Future<UserCredential?> signInWithApple() async {
+    print('signInWithApple called');
     final appleCredential = await SignInWithApple.getAppleIDCredential(
       scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName],
     );

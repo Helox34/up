@@ -7,12 +7,15 @@ import 'package:provider/provider.dart';
 // AUTH
 import 'modules/auth/auth_provider.dart';
 import 'modules/auth/screens/splash_screen.dart';
-import 'screens/auth_page.dart'; // 👈 TEN IMPORT MUSI BYĆ
+import 'screens/auth_page.dart';
 
 // COMMUNITY
 import 'modules/community/community_provider.dart';
 import 'modules/community/screens/community_page.dart';
 import 'modules/community/screens/create_post_screen.dart';
+
+// SERVICES
+import 'services/units_service.dart';
 
 // TWOJE IMPORTY
 import 'pages/profile_page.dart';
@@ -43,6 +46,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CommunityProvider()),
+        ChangeNotifierProvider(create: (_) => UnitsService()), // DODANY UNITS SERVICE
       ],
       child: const MyApp(),
     ),

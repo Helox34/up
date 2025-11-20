@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 
 class SocialSignButtons extends StatelessWidget {
-  final VoidCallback? onGoogle;
-  final VoidCallback? onFacebook;
-  final VoidCallback? onApple;
+  final Future<void> Function()? onGoogle;
+  final Future<void> Function()? onFacebook;
+  final Future<void> Function()? onApple;
+  final bool isLoading;
 
-  const SocialSignButtons({Key? key, this.onGoogle, this.onFacebook, this.onApple}) : super(key: key);
+  const SocialSignButtons({
+    Key? key,
+    this.onGoogle,
+    this.onFacebook,
+    this.onApple,
+    this.isLoading = false,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +27,10 @@ class SocialSignButtons extends StatelessWidget {
               foregroundColor: Colors.black,
               side: BorderSide(color: Colors.grey.shade300),
             ),
-            onPressed: onGoogle,
-            child: const Text('Zaloguj przez Google'),
+            onPressed: isLoading ? null : onGoogle,
+            child: isLoading
+                ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                : const Text('Zaloguj przez Google'),
           ),
         ),
         const SizedBox(height: 8),
@@ -33,8 +42,10 @@ class SocialSignButtons extends StatelessWidget {
               backgroundColor: const Color(0xFF1877F2),
               foregroundColor: Colors.white,
             ),
-            onPressed: onFacebook,
-            child: const Text('Zaloguj przez Facebook'),
+            onPressed: isLoading ? null : onFacebook,
+            child: isLoading
+                ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                : const Text('Zaloguj przez Facebook'),
           ),
         ),
         const SizedBox(height: 8),
@@ -46,8 +57,10 @@ class SocialSignButtons extends StatelessWidget {
               backgroundColor: Colors.black,
               foregroundColor: Colors.white,
             ),
-            onPressed: onApple,
-            child: const Text('Zaloguj przez Apple'),
+            onPressed: isLoading ? null : onApple,
+            child: isLoading
+                ? SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                : const Text('Zaloguj przez Apple'),
           ),
         ),
       ],
