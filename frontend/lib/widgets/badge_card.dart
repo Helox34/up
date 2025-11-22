@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/badge_model.dart';
+import '../models/badge_model.dart'; // Upewnij się że importujesz właściwy model
 
 class BadgeCard extends StatelessWidget {
-  final AchievementBadge badge;
+  final AchievementBadge badge; // Używamy AchievementBadge zamiast Badge
 
   const BadgeCard({super.key, required this.badge});
 
@@ -25,20 +25,31 @@ class BadgeCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Tytuł
-          Text(
-            badge.title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+          // Tytuł i ikona
+          Row(
+            children: [
+              Text(
+                badge.icon,
+                style: const TextStyle(fontSize: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  badge.title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
 
-          // Opis/Hint
+          // Opis
           Text(
-            badge.displayText,
+            badge.description,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
@@ -48,7 +59,7 @@ class BadgeCard extends StatelessWidget {
 
           // Progress Bar
           LinearProgressIndicator(
-            value: badge.progressPercentage,
+            value: badge.currentProgress / badge.targetProgress,
             backgroundColor: Colors.grey[300],
             color: _getProgressColor(badge.category),
             minHeight: 8,
@@ -56,26 +67,25 @@ class BadgeCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
 
-          // Procenty
+          // Procenty i postęp
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${(badge.progressPercentage * 100).toStringAsFixed(0)}%',
+                '${((badge.currentProgress / badge.targetProgress) * 100).toStringAsFixed(0)}%',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: _getProgressColor(badge.category),
                 ),
               ),
-              if (badge.targetProgress > 1)
-                Text(
-                  '${badge.currentProgress}/${badge.targetProgress}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[500],
-                  ),
+              Text(
+                '${badge.currentProgress}/${badge.targetProgress}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[500],
                 ),
+              ),
             ],
           ),
         ],

@@ -26,6 +26,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   DateTime? _selectedBirthday;
 
   final List<String> _genders = ['Mężczyzna', 'Kobieta', 'Inne'];
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -43,13 +44,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
         if (doc.exists) {
           final data = doc.data()!;
+          final unitsService = Provider.of<UnitsService>(context, listen: false);
+
+          // Konwersja jednostek jeśli potrzeba
+          double? height = data['height'] != null ? data['height'].toDouble() : null;
+          double? weight = data['weight'] != null ? data['weight'].toDouble() : null;
+
+          if (height != null && unitsService.heightUnit == 'in') {
+            height = unitsService.convertHeight(height);
+          }
+
+          if (weight != null && unitsService.weightUnit == 'lbs') {
+            weight = unitsService.convertWeight(weight);
+          }
+
           setState(() {
             _firstNameController.text = data['firstName'] ?? '';
             _lastNameController.text = data['lastName'] ?? '';
             _usernameController.text = data['username'] ?? '';
             _goalController.text = data['goal'] ?? '';
-            _heightController.text = data['height']?.toString() ?? '';
-            _weightController.text = data['weight']?.toString() ?? '';
+            _heightController.text = height?.toStringAsFixed(1) ?? '';
+            _weightController.text = weight?.toStringAsFixed(1) ?? '';
             _selectedGender = data['gender'];
 
             if (data['birthday'] != null) {
@@ -80,12 +95,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Future<void> _saveChanges() async {
     if (_user == null) return;
 
+    setState(() {
+      _isSaving = true;
+    });
+
     try {
-      // Dodaj zabezpieczenie przed null
       final unitsService = Provider.of<UnitsService>(context, listen: false);
 
       double? weight = double.tryParse(_weightController.text);
       double? height = double.tryParse(_heightController.text);
+
+      // Konwersja jednostek przed zapisaniem
+      if (weight != null && unitsService.weightUnit == 'lbs') {
+        weight = unitsService.toKg(weight);
+      }
+
+      if (height != null && unitsService.heightUnit == 'in') {
+        height = unitsService.toCm(height);
+      }
 
       await _firestore.collection('users').doc(_user!.uid).update({
         'firstName': _firstNameController.text,
@@ -105,15 +132,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       Navigator.pop(context);
     } catch (e) {
+      print('Błąd zapisywania: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Błąd podczas zapisywania: $e')),
       );
+    } finally {
+      setState(() {
+        _isSaving = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Zabezpieczenie przed null w UnitsService
     final unitsService = Provider.of<UnitsService>(context, listen: true);
 
     return Scaffold(
@@ -121,12 +152,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
         title: const Text('Edytuj Profil'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: _isSaving ? null : () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _saveChanges,
+            icon: _isSaving
+                ? const CircularProgressIndicator()
+                : const Icon(Icons.save),
+            onPressed: _isSaving ? null : _saveChanges,
           ),
         ],
       ),
@@ -134,7 +167,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Nagłówek z przyciskiem zmiany zdjęcia
             GestureDetector(
               onTap: () {
                 // Logika zmiany zdjęcia
@@ -246,13 +278,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
             const SizedBox(height: 24),
 
-            // Waga i Wzrost
-            const Text(
-              'Wzrost (cm)    Waga (kg)',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+            // Waga i Wzrost z jednostkami
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Wzrost (${unitsService.heightUnit})',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Waga (${unitsService.weightUnit})',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 16),
@@ -265,10 +309,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     controller: _heightController,
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
-                      hintText: '175',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(vertical: 16),
+                    decoration: InputDecoration(
+                      hintText: unitsService.heightUnit == 'cm' ? '175' : '69',
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
                 ),
@@ -278,10 +322,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     controller: _weightController,
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
-                    decoration: const InputDecoration(
-                      hintText: '70',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(vertical: 16),
+                    decoration: InputDecoration(
+                      hintText: unitsService.weightUnit == 'kg' ? '70' : '154',
+                      border: const OutlineInputBorder(),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
                 ),
@@ -295,12 +339,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: _saveChanges,
+                onPressed: _isSaving ? null : _saveChanges,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text(
+                child: _isSaving
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
                   'Zapisz zmiany',
                   style: TextStyle(fontSize: 16),
                 ),

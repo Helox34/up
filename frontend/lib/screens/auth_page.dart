@@ -1,4 +1,4 @@
-// language: dart
+// auth_page.dart - POPRAWIONA WERSJA
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -77,22 +77,35 @@ class _AuthPageState extends State<AuthPage> {
     setState(() => _loading = true);
     try {
       if (_isLogin) {
+        print('Logowanie: ${_emailCtrl.text.trim()}');
         await _auth.signInWithEmailAndPassword(
           email: _emailCtrl.text.trim(),
           password: _passCtrl.text.trim(),
         );
+
+        // DODANE: Wymuszenie odświeżenia stanu
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        print('Zalogowano: ${_auth.currentUser?.email}');
         _redirectToHome();
       } else {
         final displayName = '${_firstNameCtrl.text.trim()} ${_lastNameCtrl.text.trim()}';
+        print('Rejestracja: $displayName, ${_emailCtrl.text.trim()}');
+
         final cred = await _auth.createUserWithEmailAndPassword(
           email: _emailCtrl.text.trim(),
           password: _passCtrl.text.trim(),
         );
         await cred.user!.updateDisplayName(displayName);
         await _createUserDoc(cred.user!);
+
+        // DODANE: Wymuszenie odświeżenia stanu
+        await Future.delayed(const Duration(milliseconds: 500));
+
         _redirectToHome();
       }
     } on FirebaseAuthException catch (e) {
+      print('Błąd autentykacji: ${e.code} - ${e.message}');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(_getErrorMessage(e))),
       );
@@ -108,32 +121,15 @@ class _AuthPageState extends State<AuthPage> {
     await doc.set({
       'firstName': _firstNameCtrl.text.trim(),
       'lastName': _lastNameCtrl.text.trim(),
-      'pseudonym': _pseudonymCtrl.text.trim().isNotEmpty ? _pseudonymCtrl.text.trim() : null,
+      'username': _pseudonymCtrl.text.trim().isNotEmpty ? _pseudonymCtrl.text.trim() : null,
       'displayName': '${_firstNameCtrl.text.trim()} ${_lastNameCtrl.text.trim()}',
-      'avatarUrl': null, // Zdjęcie będzie null - użytkownik doda je później
+      'avatarUrl': null,
       'email': user.email,
       'createdAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
+    print('Utworzono dokument użytkownika: ${user.uid}');
   }
 
-  Future<void> _createUserDocIfMissing(User user) async {
-    final doc = _firestore.collection('users').doc(user.uid);
-    final snapshot = await doc.get();
-    if (!snapshot.exists) {
-      await _createUserDoc(user);
-    }
-  }
-
-  void _clearRegistrationFields() {
-    _firstNameCtrl.clear();
-    _lastNameCtrl.clear();
-    _pseudonymCtrl.clear();
-    _emailCtrl.clear();
-    _passCtrl.clear();
-    _confirmPassCtrl.clear();
-  }
-
-  // Pozostałe metody bez zmian (_signInWithGoogle, _signInWithFacebook, _signInWithApple, etc.)
   Future<UserCredential?> _signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -198,6 +194,28 @@ class _AuthPageState extends State<AuthPage> {
     }
   }
 
+  Future<void> _createUserDocIfMissing(User user) async {
+    final doc = _firestore.collection('users').doc(user.uid);
+    final snapshot = await doc.get();
+    if (!snapshot.exists) {
+      // POPRAWIONA LOGIKA - unikamy operatorów na null'owalnych typach
+      final displayName = user.displayName ?? '';
+      final nameParts = displayName.split(' ');
+      final firstName = nameParts.isNotEmpty ? nameParts.first : '';
+      final lastName = nameParts.length > 1 ? nameParts.last : '';
+
+      await doc.set({
+        'firstName': firstName,
+        'lastName': lastName,
+        'username': null,
+        'displayName': displayName.isNotEmpty ? displayName : user.email?.split('@').first ?? 'Użytkownik',
+        'avatarUrl': user.photoURL,
+        'email': user.email,
+        'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    }
+  }
+
   Future<void> _handleGoogleLogin() async {
     await _handleSocialLogin(_signInWithGoogle, 'Google');
   }
@@ -219,6 +237,8 @@ class _AuthPageState extends State<AuthPage> {
       final userCred = await signInFunction();
       if (userCred != null) {
         print('$platformName login successful: ${userCred.user?.email}');
+        // DODANE: Wymuszenie odświeżenia stanu
+        await Future.delayed(const Duration(milliseconds: 500));
         _redirectToHome();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -314,6 +334,15 @@ class _AuthPageState extends State<AuthPage> {
         ],
       ),
     );
+  }
+
+  void _clearRegistrationFields() {
+    _firstNameCtrl.clear();
+    _lastNameCtrl.clear();
+    _pseudonymCtrl.clear();
+    _emailCtrl.clear();
+    _passCtrl.clear();
+    _confirmPassCtrl.clear();
   }
 
   @override

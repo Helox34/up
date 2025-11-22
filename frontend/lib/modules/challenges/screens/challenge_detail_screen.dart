@@ -191,42 +191,105 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.challenge.title)),
-      body: ListView(padding: const EdgeInsets.all(16), children: [
-        Text(widget.challenge.description, style: TextStyle(fontSize: 16)),
-        SizedBox(height: 12),
-        Text('Postęp: ${progress.round()}%', style: TextStyle(fontSize: 16)),
-        SizedBox(height: 12),
-        Text('Aktualna wartość: ${_currentValue.toStringAsFixed(1)} $_getUnit'),
-        Slider(
-          value: _currentValue,
-          min: 0,
-          max: _getMaxSliderValue(),
-          divisions: 100,
-          label: _currentValue.toStringAsFixed(1),
-          onChanged: (v) => setState(() => _currentValue = v),
-        ),
-        SizedBox(height: 12),
-        ElevatedButton(
-            onPressed: _saveProgress,
-            child: Text('Zapisz postęp')
-        ),
-        SizedBox(height: 12),
-        Card(
-          child: Padding(
-            padding: EdgeInsets.all(12),
-            child: Column(
-              children: [
-                Text(
-                    'Poziomy wyzwania',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
-                ),
-                SizedBox(height: 8),
-                _buildLevelInfo(),
-              ],
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Nagłówek z opisem
+          Text(
+              widget.challenge.description,
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)
+          ),
+          SizedBox(height: 16),
+
+          // Karta z postępem
+          Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Twój postęp:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  LinearProgressIndicator(
+                    value: progress / 100,
+                    backgroundColor: Colors.grey[300],
+                    color: Colors.blue,
+                    minHeight: 8,
+                  ),
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('${progress.round()}%'),
+                      Text('${_currentValue.toStringAsFixed(1)}/$_getUnit'),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ]),
+          SizedBox(height: 16),
+
+          // Suwak do edycji postępu
+          Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Aktualizuj postęp:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 12),
+                  Text('${_currentValue.toStringAsFixed(1)} $_getUnit'),
+                  Slider(
+                    value: _currentValue,
+                    min: 0,
+                    max: _getMaxSliderValue(),
+                    divisions: 100,
+                    label: _currentValue.toStringAsFixed(1),
+                    onChanged: (v) => setState(() => _currentValue = v),
+                  ),
+                  SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: _saveProgress,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(double.infinity, 48),
+                    ),
+                    child: Text('Zapisz postęp'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 16),
+
+          // Poziomy wyzwania
+          Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                      'Poziomy wyzwania:',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)
+                  ),
+                  SizedBox(height: 12),
+                  _buildLevelInfo(),
+                ],
+              ),
+            ),
+          ),
+
+          // USUNIĘTO: Informacja o automatycznym śledzeniu
+          // Ten komunikat został usunięty zgodnie z życzeniem użytkownika
+        ],
+      ),
     );
   }
 
@@ -235,19 +298,13 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       children: [
         if (widget.challenge.target != null)
           ListTile(
-            leading: Icon(Icons.flag),
+            leading: Icon(Icons.flag, color: Colors.blue),
             title: Text('Cel wyzwania'),
             subtitle: Text('${_getMaxSliderValue().toStringAsFixed(0)} $_getUnit'),
           ),
-        if (widget.challenge.difficulty != null)
-          ListTile(
-            leading: Icon(Icons.auto_awesome),
-            title: Text('Poziom trudności'),
-            subtitle: Text(widget.challenge.difficulty!),
-          ),
         if (widget.challenge.days != null)
           ListTile(
-            leading: Icon(Icons.calendar_today),
+            leading: Icon(Icons.calendar_today, color: Colors.green),
             title: Text('Czas trwania'),
             subtitle: Text('${widget.challenge.days} dni'),
           ),

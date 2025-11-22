@@ -21,7 +21,7 @@ import 'services/units_service.dart';
 import 'pages/profile_page.dart';
 import 'pages/shop_page.dart';
 import 'modules/challenges/screens/challenge_list_with_achievements_screen.dart';
-import 'services/progress_service.dart';
+import 'modules/challenges/services/progress_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +36,9 @@ void main() async {
   }
 
   try {
-    ProgressService.instance.initializeChallenges();
+    // POPRAWIONA NAZWA METODY: initializeChallenges → initialize
+    await ProgressService.instance.initialize();
+    print('✅ ProgressService initialized successfully');
   } catch (error) {
     print('❌ ProgressService error: $error');
   }
@@ -46,7 +48,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CommunityProvider()),
-        ChangeNotifierProvider(create: (_) => UnitsService()), // DODANY UNITS SERVICE
+        ChangeNotifierProvider(create: (_) => UnitsService()),
+        // DODAJ ProgressService JAKO PROVIDER
+        ChangeNotifierProvider.value(value: ProgressService.instance),
       ],
       child: const MyApp(),
     ),

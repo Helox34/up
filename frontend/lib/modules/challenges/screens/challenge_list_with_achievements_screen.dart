@@ -39,12 +39,12 @@ class _ChallengeListWithAchievementsScreenState extends State<ChallengeListWithA
           indicatorWeight: 3,
           tabs: const [
             Tab(
-              icon: Icon(Icons.emoji_events),
+              icon: Icon(Icons.fitness_center),
               text: 'Wyzwania',
             ),
             Tab(
-              icon: Icon(Icons.workspace_premium),
-              text: 'Odznaki',
+              icon: Icon(Icons.emoji_events),
+              text: 'Osiągnięcia',
             ),
           ],
         ),
@@ -52,8 +52,8 @@ class _ChallengeListWithAchievementsScreenState extends State<ChallengeListWithA
       body: TabBarView(
         controller: _tabController,
         children: const [
-          ChallengeListScreen(), // 👈 TWOJE 45 WYZWAŃ
-          AchievementsPage(),    // 👈 SYSTEM ODZNAK/TROFEÓW
+          ChallengeListScreen(), // 👈 WYZWANIA
+          AchievementsPage(),    // 👈 OSIĄGNIĘCIA/ODZNAKI
         ],
       ),
     );

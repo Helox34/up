@@ -12,64 +12,45 @@ class BadgesPage extends StatefulWidget {
 class _BadgesPageState extends State<BadgesPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<Badge> allBadges = [
-    // TROPHIES
-    Badge(
+  final List<AchievementBadge> allBadges = [ // Używamy AchievementBadge
+    AchievementBadge(
       id: '1',
-      title: 'Double Dipper',
-      hint: '???',
-      description: 'Complete multiple workouts in one day',
-      category: 'trophies',
-      currentProgress: 0,
-      targetProgress: 10,
-      icon: '🏆',
-      isSecret: true,
-    ),
-    Badge(
-      id: '2',
-      title: 'Wanted Man',
-      hint: 'Run!',
-      description: 'Run 100km total distance',
-      category: 'trophies',
-      currentProgress: 0,
-      targetProgress: 100,
-      icon: '🏃',
-      isSecret: true,
-    ),
-
-    // BADGES
-    Badge(
-      id: '3',
-      title: 'One Upper',
-      hint: 'Can you do one?',
-      description: 'Complete 100 pull-ups',
+      title: 'Mistrz Podciągania',
+      description: 'Wykonaj 100 podciągnięć',
       category: 'badges',
       currentProgress: 0,
       targetProgress: 100,
       icon: '💪',
       isSecret: false,
     ),
-    Badge(
-      id: '4',
-      title: 'Spammer',
-      hint: 'Having a boring lift',
-      description: 'Repeat same exercise 50 times',
+    AchievementBadge(
+      id: '2',
+      title: 'Spamer',
+      description: 'Powtórz to samo ćwiczenie 50 razy',
       category: 'badges',
       currentProgress: 0,
       targetProgress: 50,
       icon: '🔁',
       isSecret: false,
     ),
-
-    // PROFICIENCY
-    Badge(
-      id: '5',
-      title: 'Bench Press Proficiency',
-      description: 'Reach 100kg bench press',
-      category: 'proficiency',
-      currentProgress: 83,
-      targetProgress: 100,
-      icon: '📊',
+    AchievementBadge(
+      id: '3',
+      title: 'Toksyczny Przyjaciel',
+      description: 'Opuść 10 treningów z przyjaciółmi',
+      category: 'badges',
+      currentProgress: 0,
+      targetProgress: 10,
+      icon: '👥',
+      isSecret: false,
+    ),
+    AchievementBadge(
+      id: '4',
+      title: 'Wyciskanie - Brąz',
+      description: 'Wyciśnij 0.75x masy ciała',
+      category: 'badges',
+      currentProgress: 0,
+      targetProgress: 10,
+      icon: '🏋️',
       isSecret: false,
     ),
   ];
@@ -84,52 +65,110 @@ class _BadgesPageState extends State<BadgesPage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Display'),
+        title: const Text('Odznaki'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: 'Trophies'),
-            Tab(text: 'Badges'),
-            Tab(text: 'Proficiency'),
+            Tab(text: 'Zdobyte'),
+            Tab(text: 'Wszystkie'),
+            Tab(text: 'Punkty'),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          // TROPHIES TAB
-          _buildBadgeList('trophies'),
+          // ZDOBYTE TAB
+          _buildBadgeList('badges', showOnlyEarned: true),
 
-          // BADGES TAB
-          _buildBadgeList('badges'),
+          // WSZYSTKIE TAB
+          _buildBadgeList('badges', showOnlyEarned: false),
 
-          // PROFICIENCY TAB
-          _buildBadgeList('proficiency'),
+          // PUNKTY TAB
+          _buildPointsTab(),
         ],
       ),
       bottomNavigationBar: BottomAppBar(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            IconButton(icon: Icon(Icons.person), onPressed: () {}),
-            IconButton(icon: Icon(Icons.people), onPressed: () {}),
-            IconButton(icon: Icon(Icons.fitness_center), onPressed: () {}),
-            IconButton(icon: Icon(Icons.bar_chart), onPressed: () {}),
-            IconButton(icon: Icon(Icons.shopping_cart), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.home), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.people), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.fitness_center), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.shopping_cart), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.person), onPressed: () {}),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBadgeList(String category) {
-    final categoryBadges = allBadges.where((badge) => badge.category == category).toList();
+  Widget _buildBadgeList(String category, {bool showOnlyEarned = false}) {
+    List<AchievementBadge> categoryBadges = allBadges.where((badge) => badge.category == category).toList();
+
+    if (showOnlyEarned) {
+      categoryBadges = categoryBadges.where((badge) => badge.currentProgress >= badge.targetProgress).toList();
+    }
+
+    if (categoryBadges.isEmpty) {
+      return const Center(
+        child: Text('Brak odznak do wyświetlenia'),
+      );
+    }
 
     return ListView.builder(
+      padding: const EdgeInsets.all(16),
       itemCount: categoryBadges.length,
       itemBuilder: (context, index) {
-        return BadgeCard(badge: categoryBadges[index]);
+        final badge = categoryBadges[index];
+        return BadgeCard(badge: badge); // Teraz powinno działać
       },
+    );
+  }
+
+  Widget _buildPointsTab() {
+    final totalPoints = allBadges.fold(0, (sum, badge) {
+      if (badge.currentProgress >= badge.targetProgress) {
+        return sum + 10;
+      }
+      return sum;
+    });
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  const Text(
+                    'Łączna liczba punktów',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '$totalPoints pkt',
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: _buildBadgeList('badges', showOnlyEarned: true),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -19,38 +19,55 @@ enum ChallengeCategory {
   bodyweight,
 }
 
-class LevelDef {
-  final String id; // e.g. 'bronze'
-  final String name; // 'Bronze'
-  final double? target; // absolute (kg, count)
-  final double? targetMultiplier; // x bodyWeight
-  final String medalType; // bronze/silver/gold/diamond
+enum MedalTier {
+  none(0, 'Brak', 0),
+  bronze(1, 'Brązowy', 1),
+  silver(2, 'Srebrny', 2),
+  gold(3, 'Złoty', 3),
+  diamond(4, 'Diamentowy', 4);
 
-  LevelDef({
-    required this.id,
-    required this.name,
-    this.target,
-    this.targetMultiplier,
-    required this.medalType,
+  final int level;
+  final String displayName;
+  final int points;
+
+  const MedalTier(this.level, this.displayName, this.points);
+}
+
+class ChallengeLevel {
+  final MedalTier tier;
+  final double targetValue;
+  final String description;
+  final bool isCompleted;
+  final DateTime? completedAt;
+
+  ChallengeLevel({
+    required this.tier,
+    required this.targetValue,
+    required this.description,
+    this.isCompleted = false,
+    this.completedAt,
   });
 
-  factory LevelDef.fromJson(Map<String, dynamic> j) => LevelDef(
-    id: j['id'] as String,
-    name: j['name'] as String,
-    target: j['target'] != null ? (j['target'] as num).toDouble() : null,
-    targetMultiplier: j['targetMultiplier'] != null
-        ? (j['targetMultiplier'] as num).toDouble()
-        : null,
-    medalType: j['medalType'] as String? ?? j['id'],
-  );
-
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    if (target != null) 'target': target,
-    if (targetMultiplier != null) 'targetMultiplier': targetMultiplier,
-    'medalType': medalType,
+    'tier': tier.level,
+    'targetValue': targetValue,
+    'description': description,
+    'isCompleted': isCompleted,
+    'completedAt': completedAt?.millisecondsSinceEpoch,
   };
+
+  factory ChallengeLevel.fromJson(Map<String, dynamic> json) => ChallengeLevel(
+    tier: MedalTier.values.firstWhere(
+          (e) => e.level == json['tier'],
+      orElse: () => MedalTier.none,
+    ),
+    targetValue: (json['targetValue'] as num).toDouble(),
+    description: json['description'] as String,
+    isCompleted: json['isCompleted'] as bool? ?? false,
+    completedAt: json['completedAt'] != null
+        ? DateTime.fromMillisecondsSinceEpoch(json['completedAt'])
+        : null,
+  );
 }
 
 class Challenge {
@@ -59,22 +76,22 @@ class Challenge {
   final String subtitle;
   final String description;
   final int days;
-  double progress; // 0.0 - 1.0 (kept for compatibility, computed from user progress)
+  double progress;
   final String difficulty;
   final ChallengeType type;
   final ChallengeCategory category;
-  final Map<String, dynamic> target; // legacy
-  Map<String, dynamic> current; // legacy
   final String unit;
   final String icon;
   bool isJoined;
   bool isCompleted;
   final DateTime? joinedAt;
   DateTime? completedAt;
-  final String? parentChallengeId;
-  final String medalType;
+
+  final List<ChallengeLevel> levels;
+  MedalTier currentTier;
+  double currentProgressValue;
+  MedalTier highestAchievedTier;
   bool isUnlocked;
-  final List<LevelDef> levels;
 
   Challenge({
     required this.id,
@@ -86,27 +103,177 @@ class Challenge {
     required this.difficulty,
     required this.type,
     required this.category,
-    required this.target,
-    required this.current,
     required this.unit,
     required this.icon,
     this.isJoined = false,
     this.isCompleted = false,
     this.joinedAt,
     this.completedAt,
-    this.parentChallengeId,
-    this.medalType = 'none',
+    required this.levels,
+    this.currentTier = MedalTier.bronze,
+    this.currentProgressValue = 0.0,
+    this.highestAchievedTier = MedalTier.none,
     this.isUnlocked = true,
-    this.levels = const [],
   });
+
+  factory Challenge.simple({
+    required String id,
+    required String title,
+    required String subtitle,
+    required String description,
+    required String difficulty,
+    required String type,
+    required String category,
+    required String icon,
+    double progress = 0.0,
+    bool isJoined = true, // ZAWSZE DOŁĄCZONE
+    String unit = 'powtórzeń',
+    double? bronzeTarget,
+    double? silverTarget,
+    double? goldTarget,
+    double? diamondTarget,
+    bool isUnlocked = true,
+  }) {
+    final bronze = bronzeTarget ?? 100;
+    final silver = silverTarget ?? 500;
+    final gold = goldTarget ?? 1000;
+    final diamond = diamondTarget ?? 2500;
+
+    final levels = [
+      ChallengeLevel(
+        tier: MedalTier.bronze,
+        targetValue: bronze,
+        description: 'Ukończ $bronze $unit',
+      ),
+      ChallengeLevel(
+        tier: MedalTier.silver,
+        targetValue: silver,
+        description: 'Ukończ $silver $unit',
+      ),
+      ChallengeLevel(
+        tier: MedalTier.gold,
+        targetValue: gold,
+        description: 'Ukończ $gold $unit',
+      ),
+      ChallengeLevel(
+        tier: MedalTier.diamond,
+        targetValue: diamond,
+        description: 'Ukończ $diamond $unit',
+      ),
+    ];
+
+    return Challenge(
+      id: id,
+      title: title,
+      subtitle: subtitle,
+      description: description,
+      days: 0, // BRAK OGRANICZENIA CZASOWEGO
+      progress: progress,
+      difficulty: difficulty,
+      type: parseType(type),
+      category: parseCategory(category),
+      unit: unit,
+      icon: icon,
+      isJoined: true, // ZAWSZE DOŁĄCZONE
+      levels: levels,
+      currentProgressValue: progress * bronze,
+      isUnlocked: isUnlocked,
+    );
+  }
+
+  static ChallengeType parseType(String s) {
+    return ChallengeType.values.firstWhere(
+          (e) => _enumToString(e).toLowerCase() == s.toLowerCase(),
+      orElse: () => ChallengeType.proficiency,
+    );
+  }
+
+  static ChallengeCategory parseCategory(String s) {
+    return ChallengeCategory.values.firstWhere(
+          (e) => _enumToString(e).toLowerCase() == s.toLowerCase(),
+      orElse: () => ChallengeCategory.strength,
+    );
+  }
+
+  ChallengeLevel get currentLevel {
+    return levels.firstWhere(
+          (level) => level.tier == currentTier,
+      orElse: () => levels.first,
+    );
+  }
+
+  double get currentTarget => currentLevel.targetValue;
+
+  bool get canLevelUp => progress >= 1.0 && currentTier.level < MedalTier.diamond.level;
+
+  String get dynamicDifficulty {
+    switch (currentTier) {
+      case MedalTier.bronze:
+        return 'bardzo łatwy';
+      case MedalTier.silver:
+        return 'łatwy';
+      case MedalTier.gold:
+        return 'średni';
+      case MedalTier.diamond:
+        return 'trudny';
+      default:
+        return 'bardzo łatwy';
+    }
+  }
+
+  Challenge levelUp() {
+    if (!canLevelUp) return this;
+
+    final nextTierIndex = currentTier.level;
+    if (nextTierIndex >= levels.length) return this;
+
+    final nextTier = MedalTier.values.firstWhere(
+          (t) => t.level == nextTierIndex,
+      orElse: () => MedalTier.diamond,
+    );
+
+    final updatedLevels = levels.map((level) {
+      if (level.tier == currentTier) {
+        return ChallengeLevel(
+          tier: level.tier,
+          targetValue: level.targetValue,
+          description: level.description,
+          isCompleted: true,
+          completedAt: DateTime.now(),
+        );
+      }
+      return level;
+    }).toList();
+
+    return copyWith(
+      currentTier: nextTier,
+      progress: 0.0,
+      currentProgressValue: 0.0,
+      highestAchievedTier: nextTier.level > highestAchievedTier.level ? nextTier : highestAchievedTier,
+      levels: updatedLevels,
+    );
+  }
+
+  Challenge updateProgress(double newValue) {
+    final currentTarget = this.currentTarget;
+    final newProgress = (newValue / currentTarget).clamp(0.0, 1.0);
+
+    return copyWith(
+      progress: newProgress,
+      currentProgressValue: newValue,
+    );
+  }
 
   Challenge copyWith({
     double? progress,
-    Map<String, dynamic>? current,
     bool? isJoined,
     bool? isCompleted,
     DateTime? joinedAt,
     DateTime? completedAt,
+    MedalTier? currentTier,
+    double? currentProgressValue,
+    MedalTier? highestAchievedTier,
+    List<ChallengeLevel>? levels,
     bool? isUnlocked,
   }) =>
       Challenge(
@@ -119,18 +286,17 @@ class Challenge {
         difficulty: difficulty,
         type: type,
         category: category,
-        target: target,
-        current: current ?? this.current,
         unit: unit,
         icon: icon,
         isJoined: isJoined ?? this.isJoined,
         isCompleted: isCompleted ?? this.isCompleted,
         joinedAt: joinedAt ?? this.joinedAt,
         completedAt: completedAt ?? this.completedAt,
-        parentChallengeId: parentChallengeId,
-        medalType: medalType,
+        levels: levels ?? this.levels,
+        currentTier: currentTier ?? this.currentTier,
+        currentProgressValue: currentProgressValue ?? this.currentProgressValue,
+        highestAchievedTier: highestAchievedTier ?? this.highestAchievedTier,
         isUnlocked: isUnlocked ?? this.isUnlocked,
-        levels: levels,
       );
 
   Map<String, dynamic> toJson() => {
@@ -143,44 +309,26 @@ class Challenge {
     'difficulty': difficulty,
     'type': _enumToString(type),
     'category': _enumToString(category),
-    'target': target,
-    'current': current,
     'unit': unit,
     'icon': icon,
     'isJoined': isJoined,
     'isCompleted': isCompleted,
     'joinedAt': joinedAt?.toIso8601String(),
     'completedAt': completedAt?.toIso8601String(),
-    'parentChallengeId': parentChallengeId,
-    'medalType': medalType,
-    'isUnlocked': isUnlocked,
     'levels': levels.map((l) => l.toJson()).toList(),
+    'currentTier': currentTier.level,
+    'currentProgressValue': currentProgressValue,
+    'highestAchievedTier': highestAchievedTier.level,
+    'isUnlocked': isUnlocked,
   };
 
   factory Challenge.fromJson(Map<String, dynamic> json) {
-    // parse enums safely
-    ChallengeType parseType(String? s) {
-      if (s == null) return ChallengeType.proficiency;
-      return ChallengeType.values.firstWhere(
-            (e) => _enumToString(e).toLowerCase() == s.toLowerCase(),
-        orElse: () => ChallengeType.proficiency,
-      );
-    }
-
-    ChallengeCategory parseCategory(String? s) {
-      if (s == null) return ChallengeCategory.strength;
-      return ChallengeCategory.values.firstWhere(
-            (e) => _enumToString(e).toLowerCase() == s.toLowerCase(),
-        orElse: () => ChallengeCategory.strength,
-      );
-    }
-
     final levelsRaw = (json['levels'] as List<dynamic>?);
     final levels = levelsRaw != null
         ? levelsRaw
-        .map((e) => LevelDef.fromJson(Map<String, dynamic>.from(e)))
+        .map((e) => ChallengeLevel.fromJson(Map<String, dynamic>.from(e)))
         .toList()
-        : <LevelDef>[];
+        : <ChallengeLevel>[];
 
     return Challenge(
       id: json['id'] as String,
@@ -189,26 +337,45 @@ class Challenge {
       description: json['description'] as String? ?? '',
       days: (json['days'] as num?)?.toInt() ?? 0,
       progress: (json['progress'] as num?)?.toDouble() ?? 0.0,
-      difficulty: json['difficulty'] as String? ?? 'Średni',
-      type: parseType(json['type'] as String?),
-      category: parseCategory(json['category'] as String?),
-      target: json['target'] != null ? Map<String, dynamic>.from(json['target']) : {},
-      current: json['current'] != null ? Map<String, dynamic>.from(json['current']) : {},
+      difficulty: json['difficulty'] as String? ?? 'bardzo łatwy',
+      type: parseType(json['type'] as String),
+      category: parseCategory(json['category'] as String),
       unit: json['unit'] as String? ?? '',
       icon: json['icon'] as String? ?? '🏆',
-      isJoined: json['isJoined'] as bool? ?? false,
+      isJoined: json['isJoined'] as bool? ?? true,
       isCompleted: json['isCompleted'] as bool? ?? false,
       joinedAt: json['joinedAt'] != null ? DateTime.parse(json['joinedAt'] as String) : null,
       completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt'] as String) : null,
-      parentChallengeId: json['parentChallengeId'] as String?,
-      medalType: json['medalType'] as String? ?? 'none',
-      isUnlocked: json['isUnlocked'] as bool? ?? true,
       levels: levels,
+      currentTier: MedalTier.values.firstWhere(
+            (t) => t.level == (json['currentTier'] as num?)?.toInt(),
+        orElse: () => MedalTier.bronze,
+      ),
+      currentProgressValue: (json['currentProgressValue'] as num?)?.toDouble() ?? 0.0,
+      highestAchievedTier: MedalTier.values.firstWhere(
+            (t) => t.level == (json['highestAchievedTier'] as num?)?.toInt(),
+        orElse: () => MedalTier.none,
+      ),
+      isUnlocked: json['isUnlocked'] as bool? ?? true,
+    );
+  }
+
+  Challenge mergeWith(Challenge saved) {
+    return copyWith(
+      progress: saved.progress,
+      isJoined: saved.isJoined,
+      isCompleted: saved.isCompleted,
+      joinedAt: saved.joinedAt,
+      completedAt: saved.completedAt,
+      currentTier: saved.currentTier,
+      currentProgressValue: saved.currentProgressValue,
+      highestAchievedTier: saved.highestAchievedTier,
+      levels: saved.levels,
+      isUnlocked: saved.isUnlocked,
     );
   }
 }
 
-// Pomocnicza funkcja do konwersji enum na string
 String _enumToString(dynamic enumValue) {
   return enumValue.toString().split('.').last;
 }

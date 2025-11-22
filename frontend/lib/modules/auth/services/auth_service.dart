@@ -1,4 +1,4 @@
-// auth_service.dart
+// lib/modules/auth/services/auth_service.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
@@ -9,9 +9,8 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _fs = FirebaseFirestore.instance;
 
-  // 👇 DODAJMY PRINT DO KONSTRUKTORA
   AuthService() {
-    print('AuthService initialized - methods available: signInWithGoogle, signInWithFacebook, signInWithApple');
+    print('AuthService initialized');
   }
 
   Future<UserCredential> signInWithEmail(String email, String password) async {
@@ -35,7 +34,6 @@ class AuthService {
     await _auth.signOut();
   }
 
-  // 👇 TE METODY DEFINITYWNIE ISTNIEJĄ
   Future<UserCredential?> signInWithGoogle() async {
     print('signInWithGoogle called');
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -79,8 +77,17 @@ class AuthService {
 
   Future<void> _createUserDoc(User user) async {
     final doc = _fs.collection('users').doc(user.uid);
+
+    // POPRAWIONA LOGIKA - unikamy operatorów na null'owalnych typach
+    final displayName = user.displayName ?? '';
+    final nameParts = displayName.split(' ');
+    final firstName = nameParts.isNotEmpty ? nameParts.first : '';
+    final lastName = nameParts.length > 1 ? nameParts.last : '';
+
     await doc.set({
-      'displayName': user.displayName ?? user.email?.split('@').first ?? 'Użytkownik',
+      'firstName': firstName,
+      'lastName': lastName,
+      'displayName': displayName.isNotEmpty ? displayName : user.email?.split('@').first ?? 'Użytkownik',
       'avatarUrl': user.photoURL,
       'createdAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
